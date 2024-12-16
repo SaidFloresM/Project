@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Nómina - Sistema de Vales</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold">Editar Nómina</h1>
+                <a href="/nominas" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver a la lista
+                </a>
+            </div>
+
+            <form action="/nominas/<%= nomina._id %>" method="POST" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+                <!-- Información del Custodio -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+                        <i class="fas fa-user mr-2"></i>Información del Custodio
+                    </h2>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="custodio">
+                            Custodio
+                        </label>
+                        <input type="text" id="custodio" name="custodio" value="<%= nomina.custodio %>" required 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            list="custodiosList">
+                        <datalist id="custodiosList"></datalist>
+                    </div>
+                </div>
+
+                <!-- Período -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+                        <i class="fas fa-calendar mr-2"></i>Período
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="fechaInicio">
+                                Fecha Inicio
+                            </label>
+                            <input type="date" id="fechaInicio" name="fechaInicio" 
+                                value="<%= nomina.fechaInicio.toISOString().split('T')[0] %>" required 
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="fechaFin">
+                                Fecha Fin
+                            </label>
+                            <input type="date" id="fechaFin" name="fechaFin" 
+                                value="<%= nomina.fechaFin.toISOString().split('T')[0] %>" required 
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vales Incluidos -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+                        <i class="fas fa-file-invoice mr-2"></i>Vales Incluidos
+                    </h2>
+                    <div class="space-y-4 max-h-96 overflow-y-auto">
+                        <% valesDisponibles.forEach(vale => { %>
+                            <div class="flex items-center justify-between bg-gray-50 p-4 rounded hover:bg-gray-100 transition-colors">
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-semibold text-lg">Folio: <%= vale.folio %></span>
+                                        <span class="text-green-600 font-bold">$<%= vale.montoViaje.toFixed(2) %></span>
+                                    </div>
+                                    <p class="text-gray-600"><%= vale.origen %> → <%= vale.destino %></p>
+                                    <p class="text-sm text-gray-500">
+                                        Viáticos: $<%= vale.viaticosDepositados.toFixed(2) %>
+                                    </p>
+                                </div>
+                                <div class="ml-4">
+                                    <input type="checkbox" name="vales" value="<%= vale._id %>" 
+                                        class="form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300"
+                                        <%= nomina.vales.includes(vale._id) ? 'checked' : '' %>
+                                        data-viaticos="<%= vale.viaticosDepositados %>"
+                                        data-monto="<%= vale.montoViaje %>"
+                                        onchange="actualizarTotales()">
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Estatus -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+                        <i class="fas fa-check-circle mr-2"></i>Estatus
+                    </h2>
+                    <select name="estatus" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="En Proceso" <%= nomina.estatus === 'En Proceso' ? 'selected' : '' %>>En Proceso</option>
+                        <option value="Pagado" <%= nomina.estatus === 'Pagado' ? 'selected' : '' %>>Pagado</option>
+                        <option value="Cancelado" <%= nomina.estatus === 'Cancelado' ? 'selected' : '' %>>Cancelado</option>
+                    </select>
+                </div>
+
+                <!-- Resumen -->
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">
+                        <i class="fas fa-calculator mr-2"></i>Resumen
+                    </h2>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-gray-600 mb-1">Total Viáticos</p>
+                            <p id="totalViaticos" class="text-2xl font-bold text-blue-600">$<%= nomina.totalViaticos.toFixed(2) %></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 mb-1">Total Pagos</p>
+                            <p id="totalPagos" class="text-2xl font-bold text-green-600">$<%= nomina.totalPagos.toFixed(2) %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-4">
+                    <button type="submit" 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-save mr-2"></i>Guardar Cambios
+                    </button>
+                    <a href="/nominas/<%= nomina._id %>/download" 
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-file-pdf mr-2"></i>Descargar PDF
+                    </a>
+                    <button type="button" onclick="compartirWhatsApp('<%= nomina._id %>')"
+                        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fab fa-whatsapp mr-2"></i>Compartir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+    function actualizarTotales() {
+        const checkboxes = document.querySelectorAll('input[name="vales"]:checked');
+        let totalViaticos = 0;
+        let totalPagos = 0;
+
+        checkboxes.forEach(checkbox => {
+            totalViaticos += parseFloat(checkbox.dataset.viaticos) || 0;
+            totalPagos += parseFloat(checkbox.dataset.monto) || 0;
+        });
+
+        document.getElementById('totalViaticos').textContent = `$${totalViaticos.toFixed(2)}`;
+        document.getElementById('totalPagos').textContent = `$${totalPagos.toFixed(2)}`;
+    }
+
+    // Autocompletado de custodios
+    document.getElementById('custodio').addEventListener('input', async (e) => {
+        const query = e.target.value;
+        if (query.length < 2) return;
+
+        try {
+            const response = await fetch(`/custodios/buscar?query=${encodeURIComponent(query)}`);
+            const custodios = await response.json();
+            
+            const datalist = document.getElementById('custodiosList');
+            datalist.innerHTML = '';
+            
+            custodios.forEach(custodio => {
+                const option = document.createElement('option');
+                option.value = custodio.nombre;
+                datalist.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error al buscar custodios:', error);
+        }
+    });
+
+    // Compartir por WhatsApp
+    async function compartirWhatsApp(id) {
+        try {
+            const response = await fetch(`/nominas/${id}/share-whatsapp`);
+            const data = await response.json();
+            if (data.success) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('Error al compartir la nómina');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al compartir la nómina');
+        }
+    }
+
+    // Inicializar totales
+    document.addEventListener('DOMContentLoaded', actualizarTotales);
+    </script>
+</body>
+</html>

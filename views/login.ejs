@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Vales</title>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card transition-in">
+            <img src="/images/logo.png" alt="Logo" class="auth-logo">
+            <h1 class="auth-title">Bienvenido</h1>
+            <p class="auth-subtitle">Inicia sesión para continuar</p>
+            
+            <form action="/auth/login" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label class="form-label" for="username">Usuario</label>
+                    <input type="text" id="username" name="username" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                
+                <button type="submit" class="auth-button">Iniciar Sesión</button>
+            </form>
+            
+            <div class="auth-links">
+                <a href="/register" class="auth-link">¿No tienes cuenta? Regístrate</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const card = document.querySelector('.auth-card');
+        
+        // Aplicar animación al cargar
+        card.classList.add('transition-in');
+        
+        // Manejar transición al registro
+        document.querySelector('.auth-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            card.classList.remove('transition-in');
+            card.classList.add('transition-out');
+            
+            setTimeout(() => {
+                window.location.href = e.target.href;
+            }, 2000);
+        });
+    });
+    </script>
+</body>
+</html>

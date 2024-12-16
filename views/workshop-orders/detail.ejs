@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Orden - Sistema de Vales</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header con acciones -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold">Orden de Servicio</h1>
+                <div class="flex space-x-4">
+                    <a href="/workshop-orders/<%= order._id %>/pdf" 
+                       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                       target="_blank">
+                        <i class="fas fa-file-pdf mr-2"></i>Descargar PDF
+                    </a>
+                    <a href="/workshop-orders" 
+                       class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-arrow-left mr-2"></i>Volver
+                    </a>
+                </div>
+            </div>
+
+            <!-- Información del Vehículo -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">
+                    <i class="fas fa-car mr-2"></i>Información del Vehículo
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <p class="text-gray-600">Unidad</p>
+                        <p class="text-xl font-semibold"><%= order.unidad %></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Placas</p>
+                        <p class="text-xl font-semibold"><%= order.placas %></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Kilometraje</p>
+                        <p class="text-xl font-semibold"><%= order.kilometraje.toLocaleString() %> km</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado y Fechas -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold">Estado</h2>
+                        <span class="inline-block mt-2 px-4 py-2 rounded-full font-semibold
+                            <%= order.estado === 'completado' ? 'bg-green-100 text-green-800' : 
+                               order.estado === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' : 
+                               'bg-red-100 text-red-800' %>">
+                            <%= order.estado.toUpperCase() %>
+                        </span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-600">Fecha de Creación</p>
+                        <p class="text-lg font-semibold">
+                            <%= new Date(order.createdAt).toLocaleDateString() %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servicios -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">
+                    <i class="fas fa-tools mr-2"></i>Servicios Solicitados
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concepto</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio Solicitado</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KMJE</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% order.servicios.forEach(servicio => { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <%= servicio.concepto %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <%= servicio.cantidad || '-' %>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <%= servicio.servicioSolicitado || '-' %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <%= servicio.kmje || '-' %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                            <%= servicio.estado === 'completado' ? 'bg-green-100 text-green-800' : 
+                                               servicio.estado === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' : 
+                                               'bg-red-100 text-red-800' %>">
+                                            <%= servicio.estado.toUpperCase() %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Solicitante -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">
+                    <i class="fas fa-user mr-2"></i>Información del Solicitante
+                </h2>
+                <p class="text-gray-600">Solicitante</p>
+                <p class="text-xl font-semibold"><%= order.solicitante %></p>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

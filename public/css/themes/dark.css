@@ -1,0 +1,88 @@
+/* Dark Mode Theme */
+:root {
+  --dark-bg-primary: #1a202c;
+  --dark-bg-secondary: #2d3748;
+  --dark-bg-tertiary: #374151;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #e2e8f0;
+  --dark-border: #4a5568;
+}
+
+.dark {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+/* Login specific dark mode */
+.dark .bg-gradient-login {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+}
+
+.dark .login-card {
+  background: rgba(45, 55, 72, 0.95);
+  border-color: var(--dark-border);
+}
+
+.dark .login-title,
+.dark .login-subtitle,
+.dark label {
+  color: var(--dark-text-primary);
+}
+
+.dark input {
+  background-color: var(--dark-bg-tertiary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+.dark input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+}
+
+/* Headers and text */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark .text-gray-800 {
+  color: var(--dark-text-primary);
+}
+
+.dark .text-gray-600,
+.dark .text-gray-700 {
+  color: var(--dark-text-secondary);
+}
+
+/* Form elements */
+.dark .form-input,
+.dark .form-select,
+.dark .form-textarea {
+  background-color: var(--dark-bg-tertiary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+/* Cards and containers */
+.dark .bg-white {
+  background-color: var(--dark-bg-secondary);
+}
+
+.dark .border-gray-200 {
+  border-color: var(--dark-border);
+}
+
+/* Buttons */
+.dark .btn-primary {
+  background-color: #4299e1;
+  color: var(--dark-text-primary);
+}
+
+.dark .btn-primary:hover {
+  background-color: #3182ce;
+}
+
+/* Footer */
+.dark footer {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+}

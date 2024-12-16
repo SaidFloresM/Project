@@ -1,0 +1,37 @@
+/* Card animations */
+.dashboard-card {
+    @apply transform transition-all duration-300;
+}
+
+.dashboard-card:hover {
+    @apply -translate-y-1 shadow-lg;
+}
+
+/* Dark mode specific styles */
+.dark .dashboard-card {
+    @apply bg-gray-800 border-gray-700;
+}
+
+.dark .dashboard-text {
+    @apply text-gray-300;
+}
+
+/* Quick access animations */
+.quick-access-link {
+    @apply transform transition-all duration-300;
+}
+
+.quick-access-link:hover {
+    @apply translate-x-2;
+}
+
+/* Notification badge animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.notification-badge {
+    animation: pulse 2s infinite;
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', {title: 'Órdenes de Taller'}) %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Órdenes de Taller</h1>
+                <p class="text-muted">Gestión de órdenes de servicio</p>
+            </div>
+            <a href="/workshop-orders/new" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nueva Orden
+            </a>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Órdenes</h6>
+                        <h3 class="mb-0"><%= stats.total %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Pendientes</h6>
+                        <h3 class="mb-0 text-danger"><%= stats.pendientes %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">En Proceso</h6>
+                        <h3 class="mb-0 text-warning"><%= stats.enProceso %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Completadas</h6>
+                        <h3 class="mb-0 text-success"><%= stats.completadas %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" 
+                               id="searchOrder" 
+                               class="form-control" 
+                               placeholder="Buscar por unidad o placas...">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="estadoFiltro" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente">Pendientes</option>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="completado">Completadas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" id="fechaInicio" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" id="fechaFin" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="aplicarFiltros()" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Órdenes -->
+        <div class="row g-4">
+            <% orders.forEach(order => { %>
+                <div class="col-md-6 order-card">
+                    <div class="card hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">Unidad: <%= order.unidad %></h5>
+                                    <p class="text-muted mb-0">Placas: <%= order.placas %></p>
+                                </div>
+                                <span class="badge <%= 
+                                    order.estado === 'completado' ? 'bg-success' : 
+                                    order.estado === 'en_proceso' ? 'bg-warning' : 
+                                    'bg-danger' %>">
+                                    <%= order.estado.toUpperCase() %>
+                                </span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Kilometraje</small>
+                                    <span><%= order.kilometraje.toLocaleString() %> km</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Fecha</small>
+                                    <span><%= new Date(order.fecha).toLocaleDateString() %></span>
+                                </div>
+                            </div>
+
+                            <!-- Servicios (Colapsable) -->
+                            <div class="mb-3">
+                                <button class="btn btn-sm btn-outline-secondary w-100 mb-2" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#servicios<%= order._id %>">
+                                    <i class="fas fa-tools me-2"></i>
+                                    Ver Servicios (<%= order.servicios.length %>)
+                                </button>
+                                <div class="collapse" id="servicios<%= order._id %>">
+                                    <div class="list-group list-group-flush">
+                                        <% order.servicios.forEach(servicio => { %>
+                                            <div class="list-group-item px-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong><%= servicio.concepto %></strong>
+                                                        <% if (servicio.servicioSolicitado) { %>
+                                                            <br>
+                                                            <small class="text-muted">
+                                                                <%= servicio.servicioSolicitado %>
+                                                            </small>
+                                                        <% } %>
+                                                    </div>
+                                                    <span class="badge <%= 
+                                                        servicio.estado === 'completado' ? 'bg-success' : 
+                                                        servicio.estado === 'en_proceso' ? 'bg-warning' : 
+                                                        'bg-danger' %>">
+                                                        <%= servicio.estado.toUpperCase() %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a href="/workshop-orders/<%= order._id %>" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/workshop-orders/<%= order._id %>/edit" 
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/workshop-orders/<%= order._id %>/pdf" 
+                                   class="btn btn-sm btn-outline-success"
+                                   target="_blank">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                                <button onclick="eliminarOrden('<%= order._id %>')" 
+                                        class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts') %>
+
+    <script src="/js/workshop-orders.js"></script>
+</body>
+</html>

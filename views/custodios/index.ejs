@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', {title: 'Custodios'}) %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Custodios</h1>
+                <p class="text-muted">Gestión de personal de custodia</p>
+            </div>
+            <button onclick="showAddForm()" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nuevo Custodio
+            </button>
+        </div>
+
+        <!-- Búsqueda y Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" 
+                               id="searchCustodio" 
+                               class="form-control" 
+                               placeholder="Buscar por nombre o número de empleado...">
+                    </div>
+                    <div class="col-md-4">
+                        <select id="estadoFiltro" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="ALTA">ALTA</option>
+                            <option value="BAJA">BAJA</option>
+                            <option value="INCAPACITADO">INCAPACITADO</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="aplicarFiltros()" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Custodios -->
+        <div class="row g-4" id="custodiosList">
+            <% custodios.forEach(custodio => { %>
+                <div class="col-md-6 custodio-card">
+                    <div class="card hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1"><%= custodio.nombre %></h5>
+                                    <p class="text-muted mb-0">N° Empleado: <%= custodio.numeroEmpleado %></p>
+                                </div>
+                                <span class="badge <%= 
+                                    custodio.estado === 'ALTA' ? 'bg-success' : 
+                                    custodio.estado === 'BAJA' ? 'bg-danger' : 
+                                    'bg-warning' %>">
+                                    <%= custodio.estado %>
+                                </span>
+                            </div>
+
+                            <% if (custodio.telefono) { %>
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-phone text-muted me-2"></i>
+                                    <span><%= custodio.telefono %></span>
+                                    <a href="https://wa.me/52<%= custodio.telefono %>" 
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-success ms-2">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            <% } %>
+
+                            <div class="d-flex gap-2">
+                                <button onclick="editCustodio('<%= custodio._id %>', '<%= custodio.nombre %>', '<%= custodio.numeroEmpleado %>', '<%= custodio.estado %>', '<%= custodio.telefono %>')"
+                                        class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteCustodio('<%= custodio._id %>')"
+                                        class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar -->
+    <div class="modal fade" id="custodioModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nuevo Custodio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="custodioForm" onsubmit="saveCustodio(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="custodioId">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" id="nombre" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Número de Empleado</label>
+                            <input type="text" id="numeroEmpleado" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <select id="estado" class="form-select" required>
+                                <option value="ALTA">ALTA</option>
+                                <option value="BAJA">BAJA</option>
+                                <option value="INCAPACITADO">INCAPACITADO</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono (10 dígitos)</label>
+                            <input type="tel" id="telefono" class="form-control" 
+                                   pattern="[0-9]{10}" placeholder="Ejemplo: 5512345678">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts') %>
+
+    <script src="/js/custodios.js"></script>
+</body>
+</html>

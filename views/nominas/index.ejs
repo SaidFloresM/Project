@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head', {title: 'Nóminas'}) %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="container py-4">
+        <!-- Header y Resumen -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="h3 mb-0">Nóminas</h1>
+                <p class="text-muted">Gestión de nóminas de custodios</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/nominas/new" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Nueva Nómina
+                </a>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Nóminas</h6>
+                        <h3 class="mb-0"><%= nominas.length %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Viáticos</h6>
+                        <h3 class="mb-0 text-success">$<%= nominas.reduce((sum, n) => sum + n.totalViaticos, 0).toFixed(2) %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Pagos</h6>
+                        <h3 class="mb-0 text-primary">$<%= nominas.reduce((sum, n) => sum + n.totalPagos, 0).toFixed(2) %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" id="searchNominas" class="form-control" placeholder="Buscar por custodio...">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="estatusFiltro" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Pagado">Pagado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" id="fechaFiltro" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="filtrarNominas()" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Nóminas -->
+        <div class="row g-4" id="nominasList">
+            <% nominas.forEach(nomina => { %>
+                <div class="col-md-6 nomina-card" 
+                     data-custodio="<%= nomina.custodio %>"
+                     data-estatus="<%= nomina.estatus %>"
+                     data-fecha="<%= nomina.createdAt %>">
+                    <div class="card hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1"><%= nomina.custodio %></h5>
+                                    <p class="text-muted mb-0">
+                                        <%= new Date(nomina.fechaInicio).toLocaleDateString() %> - 
+                                        <%= new Date(nomina.fechaFin).toLocaleDateString() %>
+                                    </p>
+                                </div>
+                                <span class="badge <%= 
+                                    nomina.estatus === 'Pagado' ? 'bg-success' : 
+                                    nomina.estatus === 'En Proceso' ? 'bg-warning' : 
+                                    'bg-danger' %>">
+                                    <%= nomina.estatus %>
+                                </span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Total Viáticos</small>
+                                    <span class="text-success">$<%= nomina.totalViaticos.toFixed(2) %></span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Total Pagos</small>
+                                    <span class="text-primary">$<%= nomina.totalPagos.toFixed(2) %></span>
+                                </div>
+                            </div>
+
+                            <!-- Vales Incluidos (Colapsable) -->
+                            <div class="mb-3">
+                                <button class="btn btn-sm btn-outline-secondary w-100 mb-2" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#vales<%= nomina._id %>">
+                                    <i class="fas fa-list me-2"></i>
+                                    Ver Vales (<%= nomina.vales.length %>)
+                                </button>
+                                <div class="collapse" id="vales<%= nomina._id %>">
+                                    <div class="list-group list-group-flush">
+                                        <% nomina.vales.forEach(vale => { %>
+                                            <div class="list-group-item px-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>Folio: <%= vale.folio %></strong>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            <%= vale.origen %> → <%= vale.destino %>
+                                                        </small>
+                                                    </div>
+                                                    <span class="text-success">$<%= vale.montoViaje.toFixed(2) %></span>
+                                                </div>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a href="/nominas/<%= nomina._id %>/edit" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/nominas/<%= nomina._id %>/download" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <button onclick="compartirWhatsApp('<%= nomina._id %>')" class="btn btn-sm btn-outline-success">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button onclick="eliminarNomina('<%= nomina._id %>')" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts') %>
+
+    <script src="/js/nominas.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Orden de Taller - Sistema de Vales</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <%- include('../partials/navbar') %>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold">Nueva Orden de Taller</h1>
+                <a href="/workshop-orders" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver
+                </a>
+            </div>
+
+            <form action="/workshop-orders" method="POST" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+                <!-- Información del vehículo -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="unidad">
+                            Unidad
+                        </label>
+                        <input type="text" id="unidad" name="unidad" required 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="placas">
+                            Placas
+                        </label>
+                        <input type="text" id="placas" name="placas" required 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="kilometraje">
+                            Kilometraje
+                        </label>
+                        <input type="number" id="kilometraje" name="kilometraje" required 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                </div>
+
+                <!-- Tabla de servicios -->
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-left">Concepto</th>
+                                <th class="px-4 py-2 text-left">Cantidad</th>
+                                <th class="px-4 py-2 text-left">Servicio Solicitado</th>
+                                <th class="px-4 py-2 text-left">KMJE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% [
+                                'CAMBIO DE ACEITE',
+                                'AFINACION',
+                                'ALINEACION Y BALANCEO',
+                                'ROTACION DE LLANTAS',
+                                'SISTEMA DE FRENOS',
+                                'SISTEMA ELECTRICO',
+                                'CLUTCH',
+                                'SUSPENSION',
+                                'LLANTAS',
+                                'BALEROS LLANTAS DELANTERAS',
+                                'REVISION SUSPENSION',
+                                'ACELERACION',
+                                'BATERIA',
+                                'BALEROS',
+                                'AMORTIGUADORES',
+                                'CAJA VEL.',
+                                'MOTOR',
+                                'ESCAÑEO',
+                                'OTROS'
+                            ].forEach(concepto => { %>
+                                <tr class="border-b">
+                                    <td class="px-4 py-2"><%= concepto %></td>
+                                    <td class="px-4 py-2">
+                                        <input type="number" 
+                                               name="servicios[<%= concepto %>][cantidad]" 
+                                               class="w-20 border rounded px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <input type="text" 
+                                               name="servicios[<%= concepto %>][servicioSolicitado]" 
+                                               class="w-full border rounded px-2 py-1">
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <input type="number" 
+                                               name="servicios[<%= concepto %>][kmje]" 
+                                               class="w-20 border rounded px-2 py-1">
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Solicitante -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="solicitante">
+                        Solicitante
+                    </label>
+                    <input type="text" id="solicitante" name="solicitante" required 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <i class="fas fa-save mr-2"></i>Guardar Orden
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

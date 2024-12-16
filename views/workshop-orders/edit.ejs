@@ -1,0 +1,22 @@
+<!-- Agregar este script al final del archivo, justo antes de </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const servicioInputs = document.querySelectorAll('input[name$="[servicioSolicitado]"]');
+    const estadoSelects = document.querySelectorAll('select[name$="[estado]"]');
+
+    servicioInputs.forEach((input, index) => {
+        input.addEventListener('input', function() {
+            const servicios = this.value.split(',').filter(s => s.trim());
+            const estadoSelect = estadoSelects[index];
+            
+            if (servicios.length === 1) {
+                estadoSelect.value = 'completado';
+                estadoSelect.classList.add('bg-green-100');
+            } else if (servicios.length > 1) {
+                estadoSelect.value = 'pendiente';
+                estadoSelect.classList.remove('bg-green-100');
+            }
+        });
+    });
+});
+</script>

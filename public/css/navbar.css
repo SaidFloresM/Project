@@ -1,0 +1,63 @@
+/* Estilos base del navbar */
+.navbar {
+    transform: translateY(-100%);
+    opacity: 0;
+    animation: slideDown 0.6s ease forwards;
+    transition: all 0.3s ease;
+}
+
+/* Animación de entrada */
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Elementos del menú */
+.menu-item {
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.menu-item::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #EF4444;
+    transition: width 0.3s ease;
+}
+
+.menu-item:hover::after,
+.menu-item.active::after {
+    width: 100%;
+}
+
+.menu-item:hover {
+    color: #EF4444;
+}
+
+.menu-item.active {
+    color: #EF4444;
+    font-weight: 600;
+}
+
+/* Dark Mode */
+.dark .navbar {
+    background-color: #1a1a1a;
+    border-color: #2d2d2d;
+}
+
+.dark .menu-item {
+    color: #e5e7eb;
+}
+
+.dark .menu-item:hover {
+    color: #EF4444;
+}
+
+.dark .menu-item.active {
+    color: #EF4444;
+}
